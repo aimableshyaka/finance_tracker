@@ -1,0 +1,144 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+body{
+    background: linear-gradient(to bottom right ,#f4fdf7,#e9fdf4);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+.container{
+    display: flex;
+    gap: 80px;
+    max-width: 1200px;
+    width: 100%;
+    align-items: center;
+}
+/* Left design */
+.left{
+    font-size: 44px;
+    color: #0b1b36;
+    margin-bottom: 20px;
+    font-weight: 900;
+}
+.left h1{
+    font-size: 44px;
+    color: #0b1b36;
+    margin-bottom: 20px;
+    font-weight: 900;
+}
+.left p{
+    font-size: 18px;
+    line-height: 1.6;
+    color: #3a4759;
+    margin-bottom: 25px;
+}
+ul{
+    list-style: none;
+}
+ul li{
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 18px;
+    color: #10223a;
+}
+ul li::before{
+    content: "●";
+    color: #08a870;
+    margin-right: 12px;
+    font-size: 20px;
+}
+.icon-box{
+    width: 90px;
+    height: 90px;
+    background: #daf7e9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    margin-bottom: 25px;
+}
+.icon-box span{
+    font-size: 50px;
+    color: #0fb16e;
+}
+
+/* RIGHT SIDE  */
+.card{
+    width: 420px;
+    background: white;
+    padding: 40px;
+    border-radius: 22px;
+    box-shadow: 0px 5px 30px rgba(0,0,0,0.1);
+}
+.tab-buttons{
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    background: #f3f5f7;
+}
+.tab-buttons button{
+    flex: 1;
+    padding: 12px;
+    background: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: .3s ease;
+}
+.tab-buttons button.active{
+    background: white;
+    font: bold;
+    color: #0fb16e;
+    border-bottom: 2px solid #0fb16e;
+}
+.form-group{
+    margin-bottom: 20px;
+    position: relative;
+}
+input{
+    width: 100%;
+    padding: 14px 45px;
+    border:1px solid #d5dce3;
+    background: #fafafa;
+    font-size: 16px;
+}
+.form-group .material-icons{
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: gray;
+}
+.btn{
+    width: 100%;
+    padding: 14px;
+    background: #0fb16e;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .3s;
+}
+.btn:hover{
+      background: #0a935a;
+}
+.google-btn{
+    margin-top: 20px;
+    border:1px solid #d5dce3;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background: #fff;
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker </title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+<!-- <script src="script.js"></script> -->
+</head>
+<body>
+    <div class="container">
+        <!-- Left Side  -->
+    <div class="left">
+        <div class="icon-box">
+            <span class="material-icons">trending_up</span>
+        </div>
+
+        <h1>Manage Your Money</h1>
+
+        <p>Track expenses, visualize spending patterns, and take control of your finances with our intuitive personal finance tracker.</p>
+
+        <ul>
+            <li>Real-time expense tracking</li>
+            <li>Smart analytics & insights</li>
+            <li>Export & backup your data</li>
+        </ul>
+    </div>
+    <!-- Right Side  -->
+        <div class="card">
+            <div class="tab-buttons">
+                <button id="btnSignIn" class="active">Sign In</button>
+                <button id="btnCreate" type="submit">Create Account</button>
+            </div>
+            <!-- Sign In form -->
+                 <form id="signInForm">
+        <div class="form-group">
+            <span class="material-icons">email</span>
+            <input type="email" placeholder="your@example.com">    
+        </div>
+                <div class="form-group">
+            <span class="material-icons">lock</span>
+            <input type="password" placeholder="●●●●●●">    
+        </div>
+        <button class="btn">Sign In</button>
+     </form>
+     <!-- Create account form -->
+      <form id="createForm" style="display: none;">
+        <div class="form-group">
+            <span class="material-icons">person</span>
+            <input type="text" id="username" placeholder="Your Names">
+        </div>
+        <div class="form-group">
+            <span class="matererial-icons">email</span>
+            <input type="email" placeholder="your@example.com">
+        </div>
+        <div class="form-group">
+            <span class="material-icons">lock</span>
+            <input type="password" placeholder="Create password">
+        </div>
+        <button class="btn">Create Account</button>
+      </form>
+      <div class="google-btn">
+        <span class="material-symbols-rounded">google</span>
+Continue With Google
+      </div>
+        </div>
+
+    </div>
+
+<script>
+    const btnSignIn = document.getElementById("btnSignIn");
+    const btnCreate = document.getElementById("btnCreate");
+
+    const signInForm = document.getElementById("signInForm");
+    const createForm = document.getElementById("createForm");
+
+    btnSignIn.onclick = () => {
+        btnSignIn.classList.add("active");
+        btnCreate.classList.remove("active");
+
+        signInForm.style.display = "block";
+        createForm.style.display = "none";
+    };
+
+    btnCreate.onclick = () => {
+        btnCreate.classList.add("active");
+        btnSignIn.classList.remove("active");
+
+        signInForm.style.display = "none";
+        createForm.style.display = "block";
+    };
+
+    const validatecreateForm=document.getElementById("createForm");
+    
+    validatecreateForm.onsubmit=function(e){
+        e.preventDefault();
+        const email=document.getElementById("username");
+        if(!email){
+            alert("Please enter the email");
+        }
+    }
+</script>
+</body>
+</html>
