@@ -35,32 +35,39 @@
             </div>
             <!-- Sign In form -->
                  <form id="signInForm">
-        <div class="form-group">
-            <span class="material-icons">email</span>
-            <input type="email" placeholder="your@example.com">    
-        </div>
-                <div class="form-group">
-            <span class="material-icons">lock</span>
-            <input type="password" placeholder="●●●●●●">    
-        </div>
-        <button class="btn">Sign In</button>
-     </form>
+    <div class="form-group">
+        <span class="material-icons">email</span>
+        <input id="login_email" type="email" placeholder="your@example.com">
+    </div>
+
+    <div class="form-group">
+        <span class="material-icons">lock</span>
+        <input id="login_password" type="password" placeholder="●●●●●●">
+    </div>
+
+    <button class="btn">Sign In</button>
+</form>
+
      <!-- Create account form -->
-      <form id="createForm" style="display: none;">
-        <div class="form-group">
-            <span class="material-icons">person</span>
-            <input type="text" id="username" placeholder="Your Names">
-        </div>
-        <div class="form-group">
-            <span class="matererial-icons">email</span>
-            <input type="email" placeholder="your@example.com">
-        </div>
-        <div class="form-group">
-            <span class="material-icons">lock</span>
-            <input type="password" placeholder="Create password">
-        </div>
-        <button class="btn">Create Account</button>
-      </form>
+      <form id="createForm" style="display:none;">
+    <div class="form-group">
+        <span class="material-icons">person</span>
+        <input id="username" type="text" placeholder="Your Names">
+    </div>
+
+    <div class="form-group">
+        <span class="material-icons">email</span>
+        <input id="email" type="email" placeholder="your@example.com">
+    </div>
+
+    <div class="form-group">
+        <span class="material-icons">lock</span>
+        <input id="new_password" type="password" placeholder="Create password">
+    </div>
+
+    <button class="btn">Create Account</button>
+</form>
+
       <div class="google-btn">
         <span class="material-symbols-rounded">google</span>
 Continue With Google
@@ -69,17 +76,18 @@ Continue With Google
 
     </div>
 
-<script>
+
+    <script>
     const btnSignIn = document.getElementById("btnSignIn");
     const btnCreate = document.getElementById("btnCreate");
 
     const signInForm = document.getElementById("signInForm");
     const createForm = document.getElementById("createForm");
 
+    // Switch Tabs
     btnSignIn.onclick = () => {
         btnSignIn.classList.add("active");
         btnCreate.classList.remove("active");
-
         signInForm.style.display = "block";
         createForm.style.display = "none";
     };
@@ -87,20 +95,71 @@ Continue With Google
     btnCreate.onclick = () => {
         btnCreate.classList.add("active");
         btnSignIn.classList.remove("active");
-
         signInForm.style.display = "none";
         createForm.style.display = "block";
     };
 
-    const validatecreateForm=document.getElementById("createForm");
-    
-    validatecreateForm.onsubmit=function(e){
+    // -----------------------------
+    // 🔥 LOCAL STORAGE AUTH SYSTEM
+    // -----------------------------
+
+    // CREATE ACCOUNT
+    createForm.addEventListener("submit", function(e) {
         e.preventDefault();
-        const email=document.getElementById("username");
-        if(!email){
-            alert("Please enter the email");
+
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("new_password").value;
+
+        if (username === "" || email === "" || password === "") {
+            alert("All fields are required!");
+            return;
         }
-    }
+
+        // Check if user already exists
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        const exists = users.some(u => u.email === email);
+
+        if (exists) {
+            alert("This email is already registered!");
+            return;
+        }
+
+        // Save new user
+        users.push({ username, email, password });
+        localStorage.setItem("users", JSON.stringify(users));
+
+        alert("Account created successfully! You can now Sign In.");
+        createForm.reset();
+        btnSignIn.click(); // switch to login form
+    });
+
+
+    // SIGN IN
+    signInForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("login_email").value.trim();
+        const password = document.getElementById("login_password").value;
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+
+        const found = users.find(
+            user => user.email === email && user.password === password
+        );
+
+        if (!found) {
+            alert("Invalid email or password!");
+            return;
+        }
+
+        // Store logged-in user
+        localStorage.setItem("loggedInUser", JSON.stringify(found));
+
+        alert("Login successful!");
+        window.location.href = "dashboard.html"; // redirect (change to your page)
+    });
 </script>
+
 </body>
 </html>
