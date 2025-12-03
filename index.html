@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
-<!-- <script src="script.js"></script> -->
+
 </head>
 <body>
     <div class="container">
@@ -69,38 +69,6 @@ Continue With Google
 
     </div>
 
-<script>
-    const btnSignIn = document.getElementById("btnSignIn");
-    const btnCreate = document.getElementById("btnCreate");
 
-    const signInForm = document.getElementById("signInForm");
-    const createForm = document.getElementById("createForm");
-
-    btnSignIn.onclick = () => {
-        btnSignIn.classList.add("active");
-        btnCreate.classList.remove("active");
-
-        signInForm.style.display = "block";
-        createForm.style.display = "none";
-    };
-
-    btnCreate.onclick = () => {
-        btnCreate.classList.add("active");
-        btnSignIn.classList.remove("active");
-
-        signInForm.style.display = "none";
-        createForm.style.display = "block";
-    };
-
-    const validatecreateForm=document.getElementById("createForm");
-    
-    validatecreateForm.onsubmit=function(e){
-        e.preventDefault();
-        const email=document.getElementById("username");
-        if(!email){
-            alert("Please enter the email");
-        }
-    }
-</script>
 </body>
 </html>
