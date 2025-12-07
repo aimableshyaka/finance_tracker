@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Analytics</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <span class="material-icons">grid_view</span>
+                </div>
+                <div class="logo-text">
+                    <h1>Finance</h1>
+                    <p>Personal Tracker</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                    <span class="material-icons">grid_view</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="transactions.html" class="nav-item" data-page="transactions">
+                    <span class="material-icons">send</span>
+                    <span>Transactions</span>
+                </a>
+                <a href="categories.html" class="nav-item" data-page="categories">
+                    <span class="material-icons">category</span>
+                    <span>Categories</span>
+                </a>
+                <a href="analytics.html" class="nav-item active" data-page="analytics">
+                    <span class="material-icons">bar_chart</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item" data-page="settings">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <button class="sign-out-btn" id="logoutBtn">
+                <span class="material-icons">logout</span>
+                <span>Sign Out</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="content-header">
+                <div class="page-title-section">
+                    <h2>Analytics</h2>
+                    <p class="page-subtitle">Visualize your spending patterns and financial insights</p>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name" id="userName">John Doe</span>
+                        <span class="user-email" id="userEmail">john@example.com</span>
+                    </div>
+                    <div class="user-avatar">
+                        <span class="material-icons">person</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Summary Cards -->
+            <section class="analytics-summary-cards">
+                <div class="analytics-card top-category-card">
+                    <div class="analytics-card-icon">
+                        <span class="material-icons">trending_up</span>
+                    </div>
+                    <div class="analytics-card-content">
+                        <h3>Top Category</h3>
+                        <p class="analytics-amount" id="topCategory">$0.00</p>
+                    </div>
+                </div>
+                <div class="analytics-card income-ytd-card">
+                    <div class="analytics-card-icon">
+                        <span class="material-icons">trending_up</span>
+                    </div>
+                    <div class="analytics-card-content">
+                        <h3>Total Income (YTD)</h3>
+                        <p class="analytics-amount" id="totalIncomeYTD">$0.00</p>
+                    </div>
+                </div>
+                <div class="analytics-card expense-ytd-card">
+                    <div class="analytics-card-icon">
+                        <span class="material-icons">trending_down</span>
+                    </div>
+                    <div class="analytics-card-content">
+                        <h3>Total Expense (YTD)</h3>
+                        <p class="analytics-amount" id="totalExpenseYTD">$0.00</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-card-large">
+                    <h3>Income vs Expense</h3>
+                    <canvas id="incomeExpenseBarChart"></canvas>
+                </div>
+                <div class="chart-card-large">
+                    <h3>Spending by Category</h3>
+                    <canvas id="spendingCategoryChart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="analytics.js"></script>
+</body>
+</html>
+

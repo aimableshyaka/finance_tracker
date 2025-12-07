@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Categories</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <span class="material-icons">grid_view</span>
+                </div>
+                <div class="logo-text">
+                    <h1>Finance</h1>
+                    <p>Personal Tracker</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                    <span class="material-icons">grid_view</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="transactions.html" class="nav-item" data-page="transactions">
+                    <span class="material-icons">send</span>
+                    <span>Transactions</span>
+                </a>
+                <a href="categories.html" class="nav-item active" data-page="categories">
+                    <span class="material-icons">category</span>
+                    <span>Categories</span>
+                </a>
+                <a href="analytics.html" class="nav-item" data-page="analytics">
+                    <span class="material-icons">bar_chart</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item" data-page="settings">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <button class="sign-out-btn" id="logoutBtn">
+                <span class="material-icons">logout</span>
+                <span>Sign Out</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="content-header">
+                <div class="page-title-section">
+                    <h2>Categories</h2>
+                    <p class="page-subtitle">Manage your transaction categories</p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-details">
+                            <span class="user-name" id="userName">John Doe</span>
+                            <span class="user-email" id="userEmail">john@example.com</span>
+                        </div>
+                        <div class="user-avatar">
+                            <span class="material-icons">person</span>
+                        </div>
+                    </div>
+                    <button class="add-category-btn" id="addCategoryBtn">
+                        <span class="material-icons">add</span>
+                        Add Category
+                    </button>
+                </div>
+            </header>
+
+            <!-- Categories Sections -->
+            <section class="categories-sections">
+                <!-- Income Categories -->
+                <div class="category-card">
+                    <div class="category-card-header">
+                        <div class="category-icon income-icon">
+                            <span class="material-icons">trending_up</span>
+                        </div>
+                        <h3>Income Categories (<span id="incomeCount">0</span>)</h3>
+                    </div>
+                    <div id="incomeCategoriesList" class="category-list">
+                        <!-- Income categories will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Expense Categories -->
+                <div class="category-card">
+                    <div class="category-card-header">
+                        <div class="category-icon expense-icon">
+                            <span class="material-icons">trending_down</span>
+                        </div>
+                        <h3>Expense Categories (<span id="expenseCount">0</span>)</h3>
+                    </div>
+                    <div id="expenseCategoriesList" class="category-list">
+                        <!-- Expense categories will be inserted here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2 id="categoryModalTitle">Add Category</h2>
+                    <p class="modal-subtitle">Create a new transaction category</p>
+                </div>
+                <button class="modal-close" id="closeCategoryModal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryType">Type <span class="required">*</span></label>
+                    <div class="type-toggle">
+                        <button type="button" class="type-btn" data-type="expense" id="categoryExpenseBtn">
+                            Expense
+                        </button>
+                        <button type="button" class="type-btn active" data-type="income" id="categoryIncomeBtn">
+                            Income
+                        </button>
+                    </div>
+                    <input type="hidden" id="categoryType" value="income" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryName">Category Name <span class="required">*</span></label>
+                    <input type="text" id="categoryName" placeholder="e.g., Salary, Food, Rent" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryColor">Color</label>
+                    <div class="color-picker">
+                        <input type="color" id="categoryColor" value="#0fb16e">
+                        <span class="color-preview" id="colorPreview"></span>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelCategoryBtn">Cancel</button>
+                    <button type="submit" class="btn-submit">
+                        Add Category
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="categories.js"></script>
+</body>
+</html>
+

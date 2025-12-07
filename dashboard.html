@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <span class="material-icons">grid_view</span>
+                </div>
+                <div class="logo-text">
+                    <h1>Finance</h1>
+                    <p>Personal Tracker</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active" data-page="dashboard">
+                    <span class="material-icons">grid_view</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="transactions.html" class="nav-item" data-page="transactions">
+                    <span class="material-icons">send</span>
+                    <span>Transactions</span>
+                </a>
+                <a href="categories.html" class="nav-item" data-page="categories">
+                    <span class="material-icons">category</span>
+                    <span>Categories</span>
+                </a>
+                <a href="analytics.html" class="nav-item" data-page="analytics">
+                    <span class="material-icons">bar_chart</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item" data-page="settings">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <button class="sign-out-btn" id="logoutBtn">
+                <span class="material-icons">logout</span>
+                <span>Sign Out</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="content-header">
+                <h2>Dashboard</h2>
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name" id="userName">John Doe</span>
+                        <span class="user-email" id="userEmail">john@example.com</span>
+                    </div>
+                    <div class="user-avatar">
+                        <span class="material-icons">person</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Summary Cards -->
+            <section class="summary-cards">
+                <div class="summary-card balance-card">
+                    <div class="card-content">
+                        <h3>Total Balance</h3>
+                        <p class="amount" id="totalBalance">$0.00</p>
+                    </div>
+                    <div class="card-icon">
+                        <span class="material-icons">attach_money</span>
+                    </div>
+                </div>
+                <div class="summary-card income-card">
+                    <div class="card-content">
+                        <h3>This Month Income</h3>
+                        <p class="amount" id="totalIncome">$0.00</p>
+                    </div>
+                    <div class="card-icon">
+                        <span class="material-icons">trending_up</span>
+                    </div>
+                </div>
+                <div class="summary-card expense-card">
+                    <div class="card-content">
+                        <h3>This Month Expense</h3>
+                        <p class="amount" id="totalExpense">$0.00</p>
+                    </div>
+                    <div class="card-icon">
+                        <span class="material-icons">trending_down</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Balance Trend Chart -->
+            <section class="chart-card">
+                <h3>Balance Trend</h3>
+                <canvas id="balanceTrendChart"></canvas>
+            </section>
+
+            <!-- Recent Transactions -->
+            <section class="transactions-card">
+                <div class="transactions-header">
+                    <h3>Recent Transactions</h3>
+                    <button class="add-transaction-btn" id="addTransactionBtn">
+                        <span class="material-icons">add</span>
+                        Add Transaction
+                    </button>
+                </div>
+                <div id="transactionList" class="transactions-list">
+                    <!-- Transactions will be inserted here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div class="modal-overlay" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2 id="modalTitle">Add Transaction</h2>
+                    <p class="modal-subtitle">Record a new income or expense transaction</p>
+                </div>
+                <button class="modal-close" id="closeModal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="transactionForm">
+                <!-- Transaction Type Toggle -->
+                <div class="form-group">
+                    <div class="type-toggle">
+                        <button type="button" class="type-btn" data-type="expense" id="expenseBtn">
+                            Expense
+                        </button>
+                        <button type="button" class="type-btn active" data-type="income" id="incomeBtn">
+                            Income
+                        </button>
+                    </div>
+                    <input type="hidden" id="transactionType" value="income" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionAmount">Amount <span class="required">*</span></label>
+                    <div class="amount-input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="transactionAmount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionCategory">Category <span class="required">*</span></label>
+                    <div class="custom-select-wrapper">
+                        <select id="transactionCategory" class="custom-select" required>
+                            <option value="">Select Category</option>
+                        </select>
+                        <span class="select-arrow material-icons">keyboard_arrow_down</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionDate">Date <span class="required">*</span></label>
+                    <div class="date-input-wrapper">
+                        <input type="date" id="transactionDate" required>
+                        <span class="date-icon material-icons">calendar_today</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="transactionName">Description <span class="required">*</span></label>
+                    <textarea id="transactionName" placeholder="e.g., Grocery shopping, Monthly rent..." rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="receiptUpload">Receipt (Optional)</label>
+                    <div class="receipt-upload">
+                        <input type="file" id="receiptUpload" accept="image/*" style="display: none;">
+                        <label for="receiptUpload" class="upload-label">
+                            <span class="material-icons">upload</span>
+                            <span>Click to upload receipt image</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" class="btn-submit">
+                        Add Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

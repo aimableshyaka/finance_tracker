@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Settings</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <span class="material-icons">grid_view</span>
+                </div>
+                <div class="logo-text">
+                    <h1>Finance</h1>
+                    <p>Personal Tracker</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                    <span class="material-icons">grid_view</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="transactions.html" class="nav-item" data-page="transactions">
+                    <span class="material-icons">send</span>
+                    <span>Transactions</span>
+                </a>
+                <a href="categories.html" class="nav-item" data-page="categories">
+                    <span class="material-icons">category</span>
+                    <span>Categories</span>
+                </a>
+                <a href="analytics.html" class="nav-item" data-page="analytics">
+                    <span class="material-icons">bar_chart</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item active" data-page="settings">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <button class="sign-out-btn" id="logoutBtn">
+                <span class="material-icons">logout</span>
+                <span>Sign Out</span>
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="content-header">
+                <div class="page-title-section">
+                    <h2>Settings</h2>
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name" id="userName">John Doe</span>
+                        <span class="user-email" id="userEmail">john@example.com</span>
+                    </div>
+                    <div class="user-avatar">
+                        <span class="material-icons">person</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Settings Tabs -->
+            <div class="settings-tabs">
+                <button class="settings-tab active" data-tab="profile">
+                    <span class="material-icons">person</span>
+                    <span>Profile</span>
+                </button>
+                <button class="settings-tab" data-tab="preferences">
+                    <span class="material-icons">settings</span>
+                    <span>Preferences</span>
+                </button>
+                <button class="settings-tab" data-tab="account">
+                    <span class="material-icons">warning</span>
+                    <span>Account</span>
+                </button>
+            </div>
+
+            <!-- Profile Tab Content -->
+            <div class="settings-content active" id="profileContent">
+                <div class="settings-section">
+                    <h3>Profile Information</h3>
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="password-section">
+                                <p class="password-hint">Change your password</p>
+                                <button type="button" class="change-password-btn" id="changePasswordBtn">
+                                    <span class="material-icons">lock</span>
+                                    Change Password
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Preferences Tab Content -->
+            <div class="settings-content" id="preferencesContent">
+                <div class="settings-section">
+                    <h3>App Preferences</h3>
+                    <form id="preferencesForm">
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency" class="custom-select">
+                                <option value="USD">US Dollar (USD)</option>
+                                <option value="EUR">Euro (EUR)</option>
+                                <option value="GBP">British Pound (GBP)</option>
+                                <option value="JPY">Japanese Yen (JPY)</option>
+                                <option value="CAD">Canadian Dollar (CAD)</option>
+                                <option value="AUD">Australian Dollar (AUD)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="emailNotifications" class="toggle-label">
+                                <div class="toggle-label-content">
+                                    <span class="material-icons">notifications</span>
+                                    <div>
+                                        <span class="toggle-label-text">Email Notifications</span>
+                                        <span class="toggle-label-desc">Get notified about transactions</span>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="emailNotifications">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save">Save Preferences</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Tab Content -->
+            <div class="settings-content" id="accountContent">
+                <div class="settings-section">
+                    <div class="danger-zone">
+                        <h3>Danger Zone</h3>
+                        <div class="danger-zone-content">
+                            <div class="danger-zone-info">
+                                <h4>Delete Account</h4>
+                                <p>This action cannot be undone</p>
+                            </div>
+                            <button type="button" class="btn-delete" id="deleteAccountBtn">
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-section">
+                    <h2>Change Password</h2>
+                    <p class="modal-subtitle">Update your account password</p>
+                </div>
+                <button class="modal-close" id="closePasswordModal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password <span class="required">*</span></label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password <span class="required">*</span></label>
+                    <input type="password" id="newPassword" placeholder="Enter new password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelPasswordBtn">Cancel</button>
+                    <button type="submit" class="btn-submit">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>
+
