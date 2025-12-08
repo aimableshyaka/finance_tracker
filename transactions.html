@@ -8,6 +8,31 @@
     <link rel="stylesheet" href="dashboard.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVUNSzQhpam3Hw-YBaC9cEV3GB2-sUdzM",
+            authDomain: "finance-tracker-3adf6.firebaseapp.com",
+            projectId: "finance-tracker-3adf6",
+            storageBucket: "finance-tracker-3adf6.firebasestorage.app",
+            messagingSenderId: "365243611842",
+            appId: "1:365243611842:web:5024869f516baa8583195b",
+            measurementId: "G-31RC6QB97T"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseAuthFunctions = { onAuthStateChanged, signOut };
+        window.firebaseFirestoreFunctions = { doc, getDoc, setDoc };
+    </script>
 </head>
 <body>
     <div class="dashboard-wrapper">
@@ -228,6 +253,31 @@
         </div>
     </div>
 
+    <!-- Auth Protection Script - Must load first -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVUNSzQhpam3Hw-YBaC9cEV3GB2-sUdzM",
+            authDomain: "finance-tracker-3adf6.firebaseapp.com",
+            projectId: "finance-tracker-3adf6",
+            storageBucket: "finance-tracker-3adf6.firebasestorage.app",
+            messagingSenderId: "365243611842",
+            appId: "1:365243611842:web:5024869f516baa8583195b",
+            measurementId: "G-31RC6QB97T"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Protect page - redirect if not authenticated
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
     <script src="transactions.js"></script>
 </body>
 </html>

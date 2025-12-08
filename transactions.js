@@ -1,15 +1,65 @@
 // Transactions Page JavaScript
 
-// Check if user is logged in
-const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-if (!loggedInUser) {
-    window.location.href = 'index.html';
+// Wait for Firebase to initialize
+let currentUser = null;
+let transactions = [];
+let editingId = null;
+let filteredTransactions = [];
+
+// Check Firebase auth state
+function waitForFirebase(callback) {
+    if (window.firebaseAuth && window.firebaseDb) {
+        const { onAuthStateChanged } = window.firebaseAuthFunctions;
+        onAuthStateChanged(window.firebaseAuth, (user) => {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    username: user.displayName || user.email
+                };
+                callback();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    } else {
+        setTimeout(() => waitForFirebase(callback), 100);
+    }
 }
 
-// Initialize
-let transactions = JSON.parse(localStorage.getItem(`transactions_${loggedInUser.email}`)) || [];
-let editingId = null;
-let filteredTransactions = [...transactions];
+// Load transactions from Firestore
+async function loadTransactionsFromFirestore() {
+    const { doc, getDoc } = window.firebaseFirestoreFunctions;
+    const db = window.firebaseDb;
+    
+    try {
+        const transactionsDoc = await getDoc(doc(db, `transactions_${currentUser.uid}`, "data"));
+        if (transactionsDoc.exists()) {
+            transactions = transactionsDoc.data().transactions || [];
+        } else {
+            transactions = [];
+        }
+        filteredTransactions = [...transactions];
+    } catch (error) {
+        console.error("Error loading transactions:", error);
+        transactions = [];
+        filteredTransactions = [];
+    }
+}
+
+// Save transactions to Firestore
+async function saveTransactionsToFirestore() {
+    const { doc, setDoc } = window.firebaseFirestoreFunctions;
+    const db = window.firebaseDb;
+    
+    try {
+        await setDoc(doc(db, `transactions_${currentUser.uid}`, "data"), {
+            transactions: transactions
+        });
+    } catch (error) {
+        console.error("Error saving transactions:", error);
+    }
+}
 
 // Categories
 const incomeCategories = ['Salary', 'Freelance', 'Investment', 'Gift', 'Other'];
@@ -46,13 +96,15 @@ const totalCountEl = document.getElementById('totalCount');
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    userNameEl.textContent = loggedInUser.username || 'User';
-    userEmailEl.textContent = loggedInUser.email;
-    updateCategories();
-    setDefaultDate();
-    populateCategoryFilter();
-    loadTransactions();
-    updateSummary();
+    waitForFirebase(async () => {
+        userNameEl.textContent = currentUser.username || 'User';
+        userEmailEl.textContent = currentUser.email;
+        await loadTransactionsFromFirestore();
+        updateCategories();
+        setDefaultDate();
+        populateCategoryFilter();
+        loadTransactions();
+        updateSummary();
     
     // Type toggle buttons
     const expenseBtn = document.getElementById('expenseBtn');
@@ -109,6 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Export CSV
     exportBtn.addEventListener('click', exportToCSV);
+    });
 });
 
 // Set default date to today
@@ -342,9 +395,9 @@ function deleteTransaction(id) {
     }
 }
 
-// Save transactions to localStorage
+// Save transactions to Firestore
 function saveTransactions() {
-    localStorage.setItem(`transactions_${loggedInUser.email}`, JSON.stringify(transactions));
+    saveTransactionsToFirestore();
 }
 
 // Update Summary Cards
@@ -421,9 +474,13 @@ function exportToCSV() {
 }
 
 // Logout
-logoutBtn.addEventListener('click', function() {
+logoutBtn.addEventListener('click', async function() {
     if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('loggedInUser');
+        const { signOut } = window.firebaseAuthFunctions;
+        if (signOut) {
+            await signOut(window.firebaseAuth);
+        }
+        localStorage.removeItem('firebaseUser');
         window.location.href = 'index.html';
     }
 });

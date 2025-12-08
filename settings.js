@@ -29,10 +29,12 @@ let userPreferences = JSON.parse(localStorage.getItem(`preferences_${loggedInUse
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    loadUserData();
-    loadPreferences();
+    waitForFirebase(async () => {
+        await loadPreferencesFromFirestore();
+        loadUserData();
+        loadPreferences();
     
-    // Tab switching
+        // Tab switching
     settingsTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const targetTab = tab.dataset.tab;
@@ -88,15 +90,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    });
 });
 
 // Load user data
 function loadUserData() {
-    userNameEl.textContent = loggedInUser.username || 'User';
-    userEmailEl.textContent = loggedInUser.email;
+    userNameEl.textContent = currentUser.username || 'User';
+    userEmailEl.textContent = currentUser.email;
     
-    document.getElementById('fullName').value = loggedInUser.username || '';
-    document.getElementById('email').value = loggedInUser.email || '';
+    document.getElementById('fullName').value = currentUser.username || '';
+    document.getElementById('email').value = currentUser.email || '';
 }
 
 // Load preferences
@@ -127,7 +130,7 @@ function switchTab(tabName) {
 }
 
 // Save profile
-function saveProfile() {
+async function saveProfile() {
     const fullName = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
     
@@ -136,30 +139,52 @@ function saveProfile() {
         return;
     }
     
-    // Update user in users array
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    const userIndex = users.findIndex(u => u.email === loggedInUser.email);
-    
-    if (userIndex !== -1) {
-        users[userIndex].username = fullName;
-        users[userIndex].email = email;
-        localStorage.setItem('users', JSON.stringify(users));
+    try {
+        const { updateProfile, updateEmail } = window.firebaseAuthFunctions;
+        const { doc, setDoc } = window.firebaseFirestoreFunctions;
+        const auth = window.firebaseAuth;
+        const db = window.firebaseDb;
+        const user = auth.currentUser;
+        
+        if (user) {
+            // Update display name
+            await updateProfile(user, { displayName: fullName });
+            
+            // Update email if changed
+            if (email !== user.email) {
+                await updateEmail(user, email);
+            }
+            
+            // Update user document in Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                username: fullName,
+                email: email,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+            
+            // Update current user
+            currentUser.username = fullName;
+            currentUser.email = email;
+            localStorage.setItem('firebaseUser', JSON.stringify({
+                uid: user.uid,
+                email: email,
+                displayName: fullName
+            }));
+            
+            // Update display
+            userNameEl.textContent = fullName;
+            userEmailEl.textContent = email;
+            
+            alert('Profile updated successfully!');
+        }
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        alert('Error updating profile: ' + error.message);
     }
-    
-    // Update logged in user
-    loggedInUser.username = fullName;
-    loggedInUser.email = email;
-    localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-    
-    // Update display
-    userNameEl.textContent = fullName;
-    userEmailEl.textContent = email;
-    
-    alert('Profile updated successfully!');
 }
 
 // Save preferences
-function savePreferences() {
+async function savePreferences() {
     const currency = document.getElementById('currency').value;
     const emailNotifications = document.getElementById('emailNotifications').checked;
     
@@ -168,22 +193,15 @@ function savePreferences() {
         emailNotifications
     };
     
-    localStorage.setItem(`preferences_${loggedInUser.email}`, JSON.stringify(userPreferences));
-    
+    await savePreferencesToFirestore();
     alert('Preferences saved successfully!');
 }
 
 // Change password
-function changePassword() {
+async function changePassword() {
     const currentPassword = document.getElementById('currentPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-    
-    // Validate current password
-    if (currentPassword !== loggedInUser.password) {
-        alert('Current password is incorrect');
-        return;
-    }
     
     // Validate new password
     if (newPassword.length < 6) {
@@ -196,45 +214,69 @@ function changePassword() {
         return;
     }
     
-    // Update password in users array
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    const userIndex = users.findIndex(u => u.email === loggedInUser.email);
-    
-    if (userIndex !== -1) {
-        users[userIndex].password = newPassword;
-        localStorage.setItem('users', JSON.stringify(users));
+    try {
+        const { signInWithEmailAndPassword, updatePassword } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+        const auth = window.firebaseAuth;
+        const user = auth.currentUser;
+        
+        if (user) {
+            // Re-authenticate user
+            const credential = await signInWithEmailAndPassword(auth, user.email, currentPassword);
+            
+            // Update password
+            await updatePassword(credential.user, newPassword);
+            
+            passwordModal.classList.remove('active');
+            passwordForm.reset();
+            alert('Password updated successfully!');
+        }
+    } catch (error) {
+        console.error("Error changing password:", error);
+        if (error.code === 'auth/wrong-password') {
+            alert('Current password is incorrect');
+        } else {
+            alert('Error changing password: ' + error.message);
+        }
     }
-    
-    // Update logged in user
-    loggedInUser.password = newPassword;
-    localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-    
-    passwordModal.classList.remove('active');
-    passwordForm.reset();
-    alert('Password updated successfully!');
 }
 
 // Delete account
-function deleteAccount() {
-    // Delete user from users array
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    users = users.filter(u => u.email !== loggedInUser.email);
-    localStorage.setItem('users', JSON.stringify(users));
-    
-    // Delete user data
-    localStorage.removeItem(`transactions_${loggedInUser.email}`);
-    localStorage.removeItem(`categories_${loggedInUser.email}`);
-    localStorage.removeItem(`preferences_${loggedInUser.email}`);
-    localStorage.removeItem('loggedInUser');
-    
-    alert('Account deleted successfully. You will be redirected to the login page.');
-    window.location.href = 'index.html';
+async function deleteAccount() {
+    try {
+        const { deleteUser } = window.firebaseAuthFunctions;
+        const { doc, deleteDoc } = window.firebaseFirestoreFunctions;
+        const auth = window.firebaseAuth;
+        const db = window.firebaseDb;
+        const user = auth.currentUser;
+        
+        if (user) {
+            // Delete user data from Firestore
+            await deleteDoc(doc(db, `transactions_${user.uid}`, "data"));
+            await deleteDoc(doc(db, `categories_${user.uid}`, "data"));
+            await deleteDoc(doc(db, `preferences_${user.uid}`, "data"));
+            await deleteDoc(doc(db, "users", user.uid));
+            
+            // Delete Firebase Auth user
+            await deleteUser(user);
+            
+            localStorage.removeItem('firebaseUser');
+            alert('Account deleted successfully. You will be redirected to the login page.');
+            window.location.href = 'index.html';
+        }
+    } catch (error) {
+        console.error("Error deleting account:", error);
+        alert('Error deleting account: ' + error.message);
+    }
 }
 
 // Logout
-logoutBtn.addEventListener('click', function() {
+logoutBtn.addEventListener('click', async function() {
     if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('loggedInUser');
+        const { signOut } = window.firebaseAuthFunctions;
+        if (signOut) {
+            await signOut(window.firebaseAuth);
+        }
+        localStorage.removeItem('firebaseUser');
         window.location.href = 'index.html';
     }
 });

@@ -1,13 +1,47 @@
 // Analytics Page JavaScript
 
-// Check if user is logged in
-const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-if (!loggedInUser) {
-    window.location.href = 'index.html';
+// Wait for Firebase to initialize
+let currentUser = null;
+let transactions = [];
+
+// Check Firebase auth state
+function waitForFirebase(callback) {
+    if (window.firebaseAuth && window.firebaseDb) {
+        const { onAuthStateChanged } = window.firebaseAuthFunctions;
+        onAuthStateChanged(window.firebaseAuth, (user) => {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    username: user.displayName || user.email
+                };
+                callback();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    } else {
+        setTimeout(() => waitForFirebase(callback), 100);
+    }
 }
 
-// Initialize
-let transactions = JSON.parse(localStorage.getItem(`transactions_${loggedInUser.email}`)) || [];
+// Load transactions from Firestore
+async function loadTransactionsFromFirestore() {
+    const { doc, getDoc } = window.firebaseFirestoreFunctions;
+    const db = window.firebaseDb;
+    
+    try {
+        const transactionsDoc = await getDoc(doc(db, `transactions_${currentUser.uid}`, "data"));
+        if (transactionsDoc.exists()) {
+            transactions = transactionsDoc.data().transactions || [];
+        } else {
+            transactions = [];
+        }
+    } catch (error) {
+        console.error("Error loading transactions:", error);
+        transactions = [];
+    }
+}
 
 // DOM Elements
 const userNameEl = document.getElementById('userName');
@@ -23,11 +57,14 @@ let spendingCategoryChart = null;
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    userNameEl.textContent = loggedInUser.username || 'User';
-    userEmailEl.textContent = loggedInUser.email;
-    
-    updateSummary();
-    initializeCharts();
+    waitForFirebase(async () => {
+        userNameEl.textContent = currentUser.username || 'User';
+        userEmailEl.textContent = currentUser.email;
+        
+        await loadTransactionsFromFirestore();
+        updateSummary();
+        initializeCharts();
+    });
 });
 
 // Get Year to Date transactions
@@ -265,9 +302,13 @@ function updateCharts() {
 }
 
 // Logout
-logoutBtn.addEventListener('click', function() {
+logoutBtn.addEventListener('click', async function() {
     if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('loggedInUser');
+        const { signOut } = window.firebaseAuthFunctions;
+        if (signOut) {
+            await signOut(window.firebaseAuth);
+        }
+        localStorage.removeItem('firebaseUser');
         window.location.href = 'index.html';
     }
 });

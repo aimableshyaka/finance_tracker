@@ -1,14 +1,62 @@
 // Categories Page JavaScript
 
-// Check if user is logged in
-const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-if (!loggedInUser) {
-    window.location.href = 'index.html';
+// Wait for Firebase to initialize
+let currentUser = null;
+let categories = [];
+let editingCategoryId = null;
+
+// Check Firebase auth state
+function waitForFirebase(callback) {
+    if (window.firebaseAuth && window.firebaseDb) {
+        const { onAuthStateChanged } = window.firebaseAuthFunctions;
+        onAuthStateChanged(window.firebaseAuth, (user) => {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    username: user.displayName || user.email
+                };
+                callback();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    } else {
+        setTimeout(() => waitForFirebase(callback), 100);
+    }
 }
 
-// Initialize
-let categories = JSON.parse(localStorage.getItem(`categories_${loggedInUser.email}`)) || [];
-let editingCategoryId = null;
+// Load categories from Firestore
+async function loadCategoriesFromFirestore() {
+    const { doc, getDoc } = window.firebaseFirestoreFunctions;
+    const db = window.firebaseDb;
+    
+    try {
+        const categoriesDoc = await getDoc(doc(db, `categories_${currentUser.uid}`, "data"));
+        if (categoriesDoc.exists()) {
+            categories = categoriesDoc.data().categories || [];
+        } else {
+            categories = [];
+        }
+    } catch (error) {
+        console.error("Error loading categories:", error);
+        categories = [];
+    }
+}
+
+// Save categories to Firestore
+async function saveCategoriesToFirestore() {
+    const { doc, setDoc } = window.firebaseFirestoreFunctions;
+    const db = window.firebaseDb;
+    
+    try {
+        await setDoc(doc(db, `categories_${currentUser.uid}`, "data"), {
+            categories: categories
+        });
+    } catch (error) {
+        console.error("Error saving categories:", error);
+    }
+}
 
 // Default categories if none exist
 const defaultIncomeCategories = ['Salary', 'Freelance'];
@@ -31,15 +79,18 @@ const expenseCountEl = document.getElementById('expenseCount');
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    userNameEl.textContent = loggedInUser.username || 'User';
-    userEmailEl.textContent = loggedInUser.email;
-    
-    // Initialize default categories if empty
-    if (categories.length === 0) {
-        initializeDefaultCategories();
-    }
-    
-    loadCategories();
+    waitForFirebase(async () => {
+        userNameEl.textContent = currentUser.username || 'User';
+        userEmailEl.textContent = currentUser.email;
+        
+        await loadCategoriesFromFirestore();
+        
+        // Initialize default categories if empty
+        if (categories.length === 0) {
+            initializeDefaultCategories();
+        }
+        
+        loadCategories();
     
     // Type toggle buttons
     const categoryExpenseBtn = document.getElementById('categoryExpenseBtn');
@@ -267,12 +318,22 @@ function editCategory(id) {
 }
 
 // Delete Category
-function deleteCategory(id) {
+async function deleteCategory(id) {
     const category = categories.find(c => c.id === id);
     if (!category) return;
     
     // Check if category is used in transactions
-    const transactions = JSON.parse(localStorage.getItem(`transactions_${loggedInUser.email}`)) || [];
+    const { doc, getDoc } = window.firebaseFirestoreFunctions;
+    const db = window.firebaseDb;
+    let transactions = [];
+    try {
+        const transactionsDoc = await getDoc(doc(db, `transactions_${currentUser.uid}`, "data"));
+        if (transactionsDoc.exists()) {
+            transactions = transactionsDoc.data().transactions || [];
+        }
+    } catch (error) {
+        console.error("Error loading transactions:", error);
+    }
     const isUsed = transactions.some(t => t.category === category.name);
     
     if (isUsed) {
@@ -290,15 +351,19 @@ function deleteCategory(id) {
     loadCategories();
 }
 
-// Save categories to localStorage
+// Save categories to Firestore
 function saveCategories() {
-    localStorage.setItem(`categories_${loggedInUser.email}`, JSON.stringify(categories));
+    saveCategoriesToFirestore();
 }
 
 // Logout
-logoutBtn.addEventListener('click', function() {
+logoutBtn.addEventListener('click', async function() {
     if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('loggedInUser');
+        const { signOut } = window.firebaseAuthFunctions;
+        if (signOut) {
+            await signOut(window.firebaseAuth);
+        }
+        localStorage.removeItem('firebaseUser');
         window.location.href = 'index.html';
     }
 });
