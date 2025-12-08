@@ -92,122 +92,123 @@ document.addEventListener('DOMContentLoaded', function() {
         
         loadCategories();
     
-    // Type toggle buttons
-    const categoryExpenseBtn = document.getElementById('categoryExpenseBtn');
-    const categoryIncomeBtn = document.getElementById('categoryIncomeBtn');
-    
-    categoryExpenseBtn.addEventListener('click', () => {
-        categoryExpenseBtn.classList.add('active');
-        categoryIncomeBtn.classList.remove('active');
-        document.getElementById('categoryType').value = 'expense';
-    });
-    
-    categoryIncomeBtn.addEventListener('click', () => {
-        categoryIncomeBtn.classList.add('active');
-        categoryExpenseBtn.classList.remove('active');
-        document.getElementById('categoryType').value = 'income';
-    });
-    
-    // Color picker preview
-    const categoryColor = document.getElementById('categoryColor');
-    const colorPreview = document.getElementById('colorPreview');
-    
-    categoryColor.addEventListener('input', function() {
-        colorPreview.style.backgroundColor = this.value;
-    });
-    
-    // Modal handlers
-    addCategoryBtn.addEventListener('click', () => {
-        editingCategoryId = null;
-        categoryModalTitle.textContent = 'Add Category';
-        categoryForm.reset();
-        document.getElementById('categoryColor').value = '#0fb16e';
-        colorPreview.style.backgroundColor = '#0fb16e';
-        cancelCategoryBtn.style.display = 'none';
-        categoryForm.querySelector('.btn-submit').textContent = 'Add Category';
-        // Reset type toggle to income
-        categoryIncomeBtn.classList.add('active');
-        categoryExpenseBtn.classList.remove('active');
-        document.getElementById('categoryType').value = 'income';
-        categoryModal.classList.add('active');
-    });
-    
-    closeCategoryModal.addEventListener('click', () => {
-        categoryModal.classList.remove('active');
-    });
-    
-    categoryModal.addEventListener('click', (e) => {
-        if (e.target === categoryModal) {
+        // Type toggle buttons
+        const categoryExpenseBtn = document.getElementById('categoryExpenseBtn');
+        const categoryIncomeBtn = document.getElementById('categoryIncomeBtn');
+        
+        categoryExpenseBtn.addEventListener('click', () => {
+            categoryExpenseBtn.classList.add('active');
+            categoryIncomeBtn.classList.remove('active');
+            document.getElementById('categoryType').value = 'expense';
+        });
+        
+        categoryIncomeBtn.addEventListener('click', () => {
+            categoryIncomeBtn.classList.add('active');
+            categoryExpenseBtn.classList.remove('active');
+            document.getElementById('categoryType').value = 'income';
+        });
+        
+        // Color picker preview
+        const categoryColor = document.getElementById('categoryColor');
+        const colorPreview = document.getElementById('colorPreview');
+        
+        categoryColor.addEventListener('input', function() {
+            colorPreview.style.backgroundColor = this.value;
+        });
+        
+        // Modal handlers
+        addCategoryBtn.addEventListener('click', () => {
+            editingCategoryId = null;
+            categoryModalTitle.textContent = 'Add Category';
+            categoryForm.reset();
+            document.getElementById('categoryColor').value = '#0fb16e';
+            colorPreview.style.backgroundColor = '#0fb16e';
+            cancelCategoryBtn.style.display = 'none';
+            categoryForm.querySelector('.btn-submit').textContent = 'Add Category';
+            // Reset type toggle to income
+            categoryIncomeBtn.classList.add('active');
+            categoryExpenseBtn.classList.remove('active');
+            document.getElementById('categoryType').value = 'income';
+            categoryModal.classList.add('active');
+        });
+        
+        closeCategoryModal.addEventListener('click', () => {
             categoryModal.classList.remove('active');
-        }
-    });
-    
-    // Category form submit
-    categoryForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+        });
         
-        const type = document.getElementById('categoryType').value;
-        const name = document.getElementById('categoryName').value.trim();
-        const color = document.getElementById('categoryColor').value;
+        categoryModal.addEventListener('click', (e) => {
+            if (e.target === categoryModal) {
+                categoryModal.classList.remove('active');
+            }
+        });
         
-        if (!name) {
-            alert('Please enter a category name');
-            return;
-        }
-        
-        // Check if category name already exists for this type
-        const existing = categories.find(c => 
-            c.name.toLowerCase() === name.toLowerCase() && 
-            c.type === type &&
-            c.id !== editingCategoryId
-        );
-        
-        if (existing) {
-            alert('This category already exists for this type');
-            return;
-        }
-        
-        if (editingCategoryId !== null) {
-            // Update existing category
-            const index = categories.findIndex(c => c.id === editingCategoryId);
-            if (index !== -1) {
-                categories[index] = {
-                    id: editingCategoryId,
+        // Category form submit
+        categoryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('categoryType').value;
+            const name = document.getElementById('categoryName').value.trim();
+            const color = document.getElementById('categoryColor').value;
+            
+            if (!name) {
+                alert('Please enter a category name');
+                return;
+            }
+            
+            // Check if category name already exists for this type
+            const existing = categories.find(c => 
+                c.name.toLowerCase() === name.toLowerCase() && 
+                c.type === type &&
+                c.id !== editingCategoryId
+            );
+            
+            if (existing) {
+                alert('This category already exists for this type');
+                return;
+            }
+            
+            if (editingCategoryId !== null) {
+                // Update existing category
+                const index = categories.findIndex(c => c.id === editingCategoryId);
+                if (index !== -1) {
+                    categories[index] = {
+                        id: editingCategoryId,
+                        type,
+                        name,
+                        color
+                    };
+                }
+                editingCategoryId = null;
+            } else {
+                // Add new category
+                const category = {
+                    id: Date.now().toString(),
                     type,
                     name,
                     color
                 };
+                categories.push(category);
             }
-            editingCategoryId = null;
-        } else {
-            // Add new category
-            const category = {
-                id: Date.now().toString(),
-                type,
-                name,
-                color
-            };
-            categories.push(category);
-        }
+            
+            saveCategories();
+            loadCategories();
+            categoryModal.classList.remove('active');
+            categoryForm.reset();
+        });
         
-        saveCategories();
-        loadCategories();
-        categoryModal.classList.remove('active');
-        categoryForm.reset();
-    });
-    
-    // Cancel button
-    cancelCategoryBtn.addEventListener('click', function() {
-        editingCategoryId = null;
-        this.style.display = 'none';
-        categoryForm.reset();
-        categoryModalTitle.textContent = 'Add Category';
-        categoryForm.querySelector('.btn-submit').textContent = 'Add Category';
-        categoryIncomeBtn.classList.add('active');
-        categoryExpenseBtn.classList.remove('active');
-        document.getElementById('categoryType').value = 'income';
-    });
-});
+        // Cancel button
+        cancelCategoryBtn.addEventListener('click', function() {
+            editingCategoryId = null;
+            this.style.display = 'none';
+            categoryForm.reset();
+            categoryModalTitle.textContent = 'Add Category';
+            categoryForm.querySelector('.btn-submit').textContent = 'Add Category';
+            categoryIncomeBtn.classList.add('active');
+            categoryExpenseBtn.classList.remove('active');
+            document.getElementById('categoryType').value = 'income';
+        });
+    }); // end waitForFirebase
+}); // end DOMContentLoaded
 
 // Initialize default categories
 function initializeDefaultCategories() {
