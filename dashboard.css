@@ -9,6 +9,19 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: #f5f7fa;
     color: #333;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Touch-friendly improvements */
+button, a, input, select, textarea {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
+}
+
+/* Prevent text size adjustment on iOS */
+* {
+    -webkit-text-size-adjust: 100%;
 }
 
 .dashboard-wrapper {
@@ -84,6 +97,7 @@ body {
     font-weight: 500;
     transition: all 0.2s;
     cursor: pointer;
+    min-height: 44px; /* Touch-friendly minimum size */
 }
 
 .nav-item .material-icons {
@@ -118,6 +132,7 @@ body {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    min-height: 44px; /* Touch-friendly minimum size */
 }
 
 .sign-out-btn:hover {
@@ -717,26 +732,82 @@ body {
     font-size: 16px;
 }
 
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu-toggle .material-icons {
+    font-size: 24px;
+    color: #1f2937;
+}
+
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .sidebar {
-        width: 220px;
+        width: 240px;
     }
     
     .main-content {
-        margin-left: 220px;
+        margin-left: 240px;
         padding: 24px;
     }
     
     .summary-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .categories-sections {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: flex;
+    }
+    
     .sidebar {
         transform: translateX(-100%);
-        transition: transform 0.3s;
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
     
     .sidebar.open {
@@ -746,12 +817,301 @@ body {
     .main-content {
         margin-left: 0;
         padding: 16px;
+        padding-top: 70px;
     }
     
     .content-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .page-title-section h2 {
+        font-size: 24px;
+    }
+    
+    .page-subtitle {
+        font-size: 13px;
+    }
+    
+    .user-info {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .summary-card {
+        padding: 20px;
+    }
+    
+    .card-content .amount {
+        font-size: 24px;
+    }
+    
+    .chart-card,
+    .transactions-card,
+    .settings-section {
+        padding: 20px;
+    }
+    
+    .chart-card h3,
+    .transactions-header h3 {
+        font-size: 18px;
+    }
+    
+    .transaction-item {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .transaction-amount {
+        width: 100%;
+        margin-top: 8px;
+        text-align: right;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+    
+    .add-transaction-btn,
+    .add-category-btn,
+    .export-btn {
+        width: 100%;
+    }
+    
+    .filters-content {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .search-input,
+    .filter-select {
+        width: 100%;
+    }
+    
+    .settings-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .settings-tab {
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+        margin: 20px;
+    }
+    
+    .modal-header {
+        padding: 20px;
+    }
+    
+    .modal-content form {
+        padding: 20px;
+    }
+}
+
+/* Additional Mobile Optimizations */
+@media (max-width: 480px) {
+    .mobile-menu-toggle {
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+    }
+    
+    .main-content {
+        padding: 12px;
+        padding-top: 60px;
+    }
+    
+    .sidebar {
+        width: 280px;
+    }
+    
+    .analytics-summary-cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .analytics-card {
+        padding: 20px;
+    }
+    
+    .analytics-amount {
+        font-size: 24px;
+    }
+    
+    .chart-card-large {
+        padding: 16px;
+    }
+    
+    .chart-card-large h3 {
+        font-size: 16px;
+    }
+    
+    .chart-card-large canvas {
+        max-height: 250px;
+    }
+    
+    .content-header {
+        margin-bottom: 20px;
+    }
+    
+    .page-title-section h2 {
+        font-size: 20px;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .user-details {
+        align-items: flex-start;
+    }
+    
+    .summary-cards {
+        gap: 12px;
+    }
+    
+    .summary-card {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .card-icon {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .card-content .amount {
+        font-size: 22px;
+    }
+    
+    .chart-card,
+    .transactions-card,
+    .settings-section {
+        padding: 16px;
+    }
+    
+    .chart-card h3,
+    .transactions-header h3 {
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .transaction-item-full {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .transaction-name-full {
+        font-size: 14px;
+    }
+    
+    .transaction-meta-full {
+        font-size: 12px;
+    }
+    
+    .transaction-amount-full {
+        font-size: 14px;
+    }
+    
+    .category-item {
+        padding: 10px;
+    }
+    
+    .category-name {
+        font-size: 14px;
+    }
+    
+    .filters-section {
+        padding: 16px;
+    }
+    
+    .filters-header h3 {
+        font-size: 15px;
+    }
+    
+    .settings-section {
+        padding: 16px;
+    }
+    
+    .settings-section h3 {
+        font-size: 16px;
+    }
+    
+    .password-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .change-password-btn {
+        width: 100%;
+    }
+    
+    .danger-zone {
+        padding: 16px;
+    }
+    
+    .danger-zone-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .btn-delete {
+        width: 100%;
+    }
+    
+    .modal-content {
+        width: 100%;
+        max-height: 95vh;
+        margin: 10px;
+        border-radius: 8px;
+    }
+    
+    .modal-header {
+        padding: 16px;
+    }
+    
+    .modal-content form {
+        padding: 16px;
+    }
+    
+    .type-toggle {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .type-btn {
+        width: 100%;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .btn-cancel,
+    .btn-submit {
+        width: 100%;
     }
 }
 
@@ -1032,8 +1392,8 @@ body {
 }
 
 .action-btn-full {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -1041,6 +1401,8 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    min-width: 44px; /* Touch-friendly minimum size */
+    min-height: 44px;
 }
 
 .edit-btn-full {
@@ -1209,8 +1571,8 @@ body {
 }
 
 .action-btn-category {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -1218,6 +1580,8 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    min-width: 44px; /* Touch-friendly minimum size */
+    min-height: 44px;
 }
 
 .edit-category-btn {

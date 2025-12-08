@@ -12,12 +12,93 @@ body{
     align-items: center;
     padding: 40px;
 }
+
 .container{
     display: flex;
     gap: 80px;
     max-width: 1200px;
     width: 100%;
     align-items: center;
+}
+
+/* Responsive Design for Login Page */
+@media (max-width: 1024px) {
+    .container {
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 20px;
+    }
+    
+    .container {
+        flex-direction: column;
+        gap: 30px;
+        align-items: stretch;
+    }
+    
+    .left {
+        text-align: center;
+    }
+    
+    .left h1 {
+        font-size: 32px;
+    }
+    
+    .left p {
+        font-size: 16px;
+    }
+    
+    .card {
+        width: 100%;
+        max-width: 100%;
+        padding: 30px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 15px;
+    }
+    
+    .left h1 {
+        font-size: 28px;
+    }
+    
+    .left p {
+        font-size: 14px;
+    }
+    
+    .icon-box {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 20px;
+    }
+    
+    .icon-box span {
+        font-size: 40px;
+    }
+    
+    .card {
+        padding: 25px 15px;
+    }
+    
+    .tab-buttons button {
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    input {
+        padding: 12px 40px;
+        font-size: 15px;
+    }
+    
+    .btn {
+        padding: 12px;
+        font-size: 16px;
+    }
 }
 /* Left design */
 .left{

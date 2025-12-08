@@ -36,8 +36,16 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <span class="material-icons">menu</span>
+        </button>
+        
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <!-- Left Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-icon">
                     <span class="material-icons">grid_view</span>
@@ -207,6 +215,7 @@
             }
         });
     </script>
+    <script src="mobile-menu.js"></script>
     <script src="categories.js"></script>
 </body>
 </html>
